@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+function copyToClipboard(text) {
+  window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+}
+
 function NotesArea({notes, updateNote, selectNote, editNote, deselectNote}) {
   return (
     <div className='noteContainer'>
@@ -28,72 +32,49 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      history: [
-        {
-          notes: []
-        }
-      ],
+      notes: [],
       stepNumber: 0,
     };
   }
 
-  createNote() {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const notes = current.notes.slice();
+  componentDidUpdate() {
+    console.log(this.state);
+  }
 
-    notes.push({ style: { top: 10, left: 10 } });
+  createNote() {
+    const notes = this.state.notes;
+
+    notes.push({ style: { top: 100, left: 100 } });
 
     this.setState({
-      history: history.concat([
-        {
-          notes: notes,
-        }
-      ]),
-      stepNumber: history.length,
+      notes
     });
   }
 
   updateNote (event, index) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const notes = current.notes.slice();
+    const notes = this.state.notes;
 
     console.log(index);
 
     notes[index].content = event.target.value;
 
     this.setState({
-      history: history.concat([
-        {
-          notes: notes,
-        }
-      ]),
-      stepNumber: history.length,
+      notes
     });
   }
 
   selectNote (i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const notes = current.notes.slice();
+    const notes = this.state.notes;
 
     notes[i].selected = true;
 
     this.setState({
-      history: history.concat([
-        {
-          notes: notes,
-        }
-      ]),
-      stepNumber: history.length,
+      notes
     });
   }
 
   moveNote (event, index) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const notes = current.notes.slice();
+    const notes = this.state.notes;
 
     const note = (() => {
       for (var i = 0; i < notes.length; i++) {
@@ -129,32 +110,27 @@ class App extends Component {
       }
 
       this.setState({
-        history: history.concat([
-          {
-            notes: notes,
-          }
-        ]),
-        stepNumber: history.length,
+        notes
       });
     }
   }
 
   releaseNote () {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const notes = current.notes.slice();
+    const notes = this.state.notes;
 
     notes.forEach(note => {
       note.selected = false;
       note.oldX = null;
       note.oldY = null;
     });
+
+    this.setState({
+      notes
+    });
   }
 
   editNote (event, i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const notes = current.notes.slice();
+    const notes = this.state.notes;
 
     if (!notes[i].editing && notes[i].editable) {
       notes[i].editing = true;
@@ -175,9 +151,7 @@ class App extends Component {
   }
 
   deselectNote (i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const notes = current.notes.slice();
+    const notes = this.state.notes;
 
     notes[i].editing = false;
     notes[i].editable = false;
@@ -185,19 +159,43 @@ class App extends Component {
     console.log('deselect');
   }
 
-  render() {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
+  giveUserSave() {
+    console.log(this.state);
+    copyToClipboard(JSON.stringify(this.state));
+  }
 
+  getUserSave() {
+    const state = prompt("Please enter your name:", "");
+    let stateObject;
+    try {
+      stateObject = JSON.parse(state);
+
+      if (stateObject) {
+        // console.log(stateObject);
+        this.setState(stateObject);
+      }
+    } catch (e) {
+      console.log(e);
+      alert(e)
+    }
+  }
+
+  render() {
     return (
       <div className='main' onMouseMove={(event) => this.moveNote(event)} onMouseUp={() => this.releaseNote()}>
         <div className='menu'>
           <button onClick={() => this.createNote()} className='createNote' title='create note'>
             create note
           </button>
+          <button onClick={() => this.giveUserSave()}>
+            Save
+          </button>
+          <button onClick={() => this.getUserSave()}>
+            Load
+          </button>
         </div>
         <NotesArea
-          notes={current.notes}
+          notes={this.state.notes}
           className='NotesArea'
           updateNote={(event, index) => this.updateNote(event, index)}
           selectNote={(index) => this.selectNote(index)}
