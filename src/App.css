@@ -1,4 +1,4 @@
-body, .root, .main{
+body, .root, .main, .noteContainer{
   width: 200%;
   height: 200vh;
   display: inline-block;
