@@ -6,6 +6,7 @@ body, .root, .main, .noteContainer{
 
 .note {
   position: absolute;
+  box-sizing: border-box;
 
   min-width: 200px;
   min-height: 200px;
@@ -25,4 +26,9 @@ body, .root, .main, .noteContainer{
   height: 100%;
   background-color: transparent;
   font-size: 20px;
+  outline: none;
+}
+
+.note.selected {
+  border: 2px red solid;
 }

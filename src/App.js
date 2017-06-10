@@ -8,26 +8,22 @@ function copyToClipboard(text) {
 
 function NotesArea({notes, updateNote, selectNote, editNote, deselectNote}) {
   return (
-    <div className='noteContainer'>
-      {notes.map((note, index) => {
-        console.log(note.selected);
-
-        return (
-          <div
-            className={`note${note.selected?' selected':''}`}
-            key={index}
-            onMouseDown={(event) => selectNote(event, index)}
-            style={note.style} >
-            <textarea
-              className='noteText'
-              onChange={(event) => updateNote(event, index)}
-              readOnly={!(note.editable || note.editing)}
-              onClick={(event) => editNote(event, index)}
-              onBlur={(event) => deselectNote(event, index)}>
-            </textarea>
-          </div>
-        );
-      })}
+    <div className='noteContainer' onClick={(event) => deselectNote(event)}>
+      {notes.map((note, index) =>
+        <div
+          className={`note${note.selected?' selected':''}`}
+          data-index={index}
+          key={index}
+          onMouseDown={(event) => selectNote(event, index)}
+          style={note.style} >
+          <textarea
+            className='noteText'
+            onChange={(event) => updateNote(event, index)}
+            readOnly={!(note.editable || note.editing)}
+            onClick={(event) => editNote(event, index)} >
+          </textarea>
+        </div>
+      )}
     </div>
   )
 }
@@ -42,8 +38,7 @@ class App extends Component {
 
     window.addEventListener("keydown",
       (e) => {
-        console.log(e);
-          if (e.shiftKey) {
+          if (e.key === 'Shift') {
             this.setState({
               ...this.state,
               shiftKey: true
@@ -54,8 +49,7 @@ class App extends Component {
 
     window.addEventListener("keyup",
       (e) => {
-        console.log(e);
-          if (e.shiftKey) {
+          if (e.key === 'Shift') {
             this.setState({
               ...this.state,
               shiftKey: false
@@ -185,22 +179,26 @@ class App extends Component {
     }
   }
 
-  deselectNote (event, i) {
+  deselectNote (event) {
     const notes = this.state.notes;
+    let target;
 
-    console.log(this.state.shiftKey?'shift':'no shift');
+    try {
+      target = event.nativeEvent.path[1].dataset.index;
+    } catch (e) {}
 
-    if (!this.state.shiftKey) {
+    if (!target && !this.state.shiftKey) {
       console.log('deselecting all notes');
       notes.forEach(note => {
         note.selected = false;
+        note.editing = false;
+        note.editable = false;
       });
     }
 
-    notes[i].editing = false;
-    notes[i].editable = false;
-
-    console.log('deselect');
+    this.setState({
+      notes
+    });
   }
 
   giveUserSave() {
@@ -258,7 +256,7 @@ class App extends Component {
           updateNote={(event, index) => this.updateNote(event, index)}
           selectNote={(event, index) => this.selectNote(event, index)}
           editNote={(event, index) => this.editNote(event, index)}
-          deselectNote={(event, index) => this.deselectNote(event, index)}
+          deselectNote={(event) => this.deselectNote(event)}
         />
       </div>
     );
