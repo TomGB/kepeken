@@ -12,5 +12,5 @@ npm i
 
 to run:
 ```
-npm run dev
+npm start
 ```
