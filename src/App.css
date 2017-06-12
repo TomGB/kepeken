@@ -4,6 +4,17 @@ body, .root, .main, .noteContainer{
   display: inline-block;
 }
 
+.selection-box {
+  position: absolute;
+  background: rgba(0, 0, 255, 0.2);
+  border: 1px blue solid;
+  display: inline-block;
+}
+
+.invisible{
+  display: none;
+}
+
 .note {
   position: absolute;
   box-sizing: border-box;
@@ -30,5 +41,5 @@ body, .root, .main, .noteContainer{
 }
 
 .note.selected {
-  border: 2px red solid;
+  border: 2px blue solid;
 }

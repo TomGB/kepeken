@@ -6,9 +6,17 @@ function copyToClipboard(text) {
   window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
 }
 
-function NotesArea({notes, updateNote, selectNote, editNote, deselectNote}) {
+function NotesArea({notes, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
   return (
-    <div className='noteContainer' onClick={(event) => deselectNote(event)}>
+    <div
+      className='noteContainer'
+      onMouseDown={(event) => startSelectBox(event)}
+      onMouseUp={(event) => {
+        deselectNote(event)
+        endSelectionBox(event)
+      }}
+      onMouseMove={(event) => drawSelectBox(event)}
+    >
       {notes.map((note, index) =>
         <div
           className={`note${note.selected?' selected':''}`}
@@ -20,10 +28,12 @@ function NotesArea({notes, updateNote, selectNote, editNote, deselectNote}) {
             className='noteText'
             onChange={(event) => updateNote(event, index)}
             readOnly={!(note.editable || note.editing)}
-            onClick={(event) => editNote(event, index)} >
+            onDoubleClick={(event) => editNote(event, index)} >
           </textarea>
         </div>
       )}
+      <div className={`selection-box${selectionBox.visible?'':' invisible'}`} style={selectionBox.style}>
+      </div>
     </div>
   )
 }
@@ -34,6 +44,10 @@ class App extends Component {
     this.state = {
       notes: [],
       stepNumber: 0,
+      selectionBox: {
+        visible: false,
+        style: {},
+      }
     };
 
     window.addEventListener("keydown",
@@ -44,6 +58,10 @@ class App extends Component {
               shiftKey: true
             });
           };
+
+          if(e.key === 'Escape') {
+            this.deselectNote(e);
+          }
       },
     false);
 
@@ -60,7 +78,7 @@ class App extends Component {
   }
 
   // componentDidUpdate() {
-  //   console.log(this.state);
+  //   console.(this.state);
   // }
 
   createNote() {
@@ -91,6 +109,7 @@ class App extends Component {
     if (!event.shiftKey) {
       notes.forEach(note => {
         note.selected = false;
+        note.movable = false;
       });
     }
 
@@ -105,50 +124,57 @@ class App extends Component {
   moveNote (event, index) {
     const notes = this.state.notes;
 
-    const note = (() => {
-      for (var i = 0; i < notes.length; i++) {
-        if (notes[i].movable) {
-          return notes[i];
+    if (this.state.movingNotes) {
+
+      const notesToMove = [];
+      notes.forEach(note => {
+        if(note.movable && !note.editing) {
+          notesToMove.push(note);
         }
-      }
+      })
 
-      return false;
-    })();
+      console.log('notes to move:',notesToMove.length);
 
-    if(note && !note.editing) {
-      if(event.buttons){
-        if (note.oldX) {
+      if (notesToMove.length) {
+        if (event.buttons) {
+          notesToMove.forEach( note => {
+            if (note.oldX) {
+              note.X = event.clientX;
+              note.Y = event.clientY;
 
-          note.X = event.clientX;
-          note.Y = event.clientY;
+              const diffX = note.X - note.oldX;
+              const diffY = note.Y - note.oldY;
 
-          const diffX = note.X - note.oldX;
-          const diffY = note.Y - note.oldY;
+              note.style.left = note.style.left + diffX;
+              note.style.top = note.style.top + diffY;
 
-          note.style.left = note.style.left + diffX;
-          note.style.top = note.style.top + diffY;
+              note.oldX = note.X;
+              note.oldY = note.Y;
+            } else {
+              note.oldX = event.clientX;
+              note.oldY = event.clientY;
+            }
 
-          note.oldX = note.X;
-          note.oldY = note.Y;
+            this.setState({
+              notes
+            });
+          });
         } else {
-          note.oldX = event.clientX;
-          note.oldY = event.clientY;
+          this.releaseNote();
         }
-      } else {
-        this.releaseNote();
       }
-
-      this.setState({
-        notes
-      });
     }
+
   }
 
   releaseNote () {
     const notes = this.state.notes;
 
     notes.forEach(note => {
-      note.movable = false;
+      if(!note.selected){
+        note.movable = false;
+      }
+
       note.oldX = null;
       note.oldY = null;
     });
@@ -160,23 +186,11 @@ class App extends Component {
 
   editNote (event, i) {
     const notes = this.state.notes;
+    notes[i].editing = true;
 
-    if (!notes[i].editing && notes[i].editable) {
-      notes[i].editing = true;
-
-      console.log('editing');
-    }
-
-    if (!notes[i].editing && !notes[i].editable) {
-      notes[i].editable = true;
-
-      console.log('editable');
-
-      setTimeout(() => {
-        notes[i].editable = false;
-        console.log('not editable');
-      }, 500);
-    }
+    this.setState({
+      notes
+    });
   }
 
   deselectNote (event) {
@@ -197,7 +211,8 @@ class App extends Component {
     }
 
     this.setState({
-      notes
+      notes,
+      movingNotes: false,
     });
   }
 
@@ -234,6 +249,91 @@ class App extends Component {
     // });
   // }
 
+  startSelectBox(event) {
+    console.log('selection box visible');
+
+    if(!event.nativeEvent.path[1].dataset.index){
+      this.setState({
+        selectionBox: {
+          visible: true,
+          startX: event.clientX,
+          startY: event.clientY,
+          currentX: event.clientX,
+          currentY: event.clientY,
+          style: {},
+        }
+      });
+    } else {
+      this.setState({
+        movingNotes: true,
+      });
+    }
+  }
+
+  drawSelectBox(event) {
+    const selectionBox = this.state.selectionBox;
+    if (selectionBox.visible) {
+
+      selectionBox.currentX = event.clientX;
+      selectionBox.currentY = event.clientY;
+
+      if (selectionBox.startX < selectionBox.currentX) {
+        selectionBox.style.left = selectionBox.startX;
+        selectionBox.style.width = selectionBox.currentX - selectionBox.startX;
+      } else {
+        selectionBox.style.left = selectionBox.currentX;
+        selectionBox.style.width = selectionBox.startX - selectionBox.currentX;
+      }
+
+      if (selectionBox.startY < selectionBox.currentY) {
+        selectionBox.style.top = selectionBox.startY;
+        selectionBox.style.height = selectionBox.currentY - selectionBox.startY;
+      } else {
+        selectionBox.style.top = selectionBox.currentY;
+        selectionBox.style.height = selectionBox.startY - selectionBox.currentY;
+      }
+
+      this.setState({
+          selectionBox
+      });
+    }
+  }
+
+  endSelectionBox(event) {
+    console.log('selection box invisitble');
+
+    let selectionBox = this.state.selectionBox;
+
+    const notes = this.state.notes;
+
+    notes.forEach(note => {
+      if (
+        note.style.left > selectionBox.style.left &&
+        note.style.top > selectionBox.style.top &&
+        note.style.left + 200 < selectionBox.style.left + selectionBox.style.width &&
+        note.style.top + 200 < selectionBox.style.top + selectionBox.style.height
+      ) {
+        console.log('note inside');
+        note.selected = true;
+        note.movable = true;
+      }
+    });
+
+    selectionBox = {
+      visible: false,
+      startX: 0,
+      startY: 0,
+      currentX: 0,
+      currentY: 0,
+      style: {},
+    }
+
+    this.setState({
+      notes,
+      selectionBox
+    });
+  }
+
   render() {
     return (
       <div className='main'
@@ -257,7 +357,12 @@ class App extends Component {
           selectNote={(event, index) => this.selectNote(event, index)}
           editNote={(event, index) => this.editNote(event, index)}
           deselectNote={(event) => this.deselectNote(event)}
-        />
+          startSelectBox = {(event) => this.startSelectBox(event)}
+          drawSelectBox = {(event) => this.drawSelectBox(event)}
+          endSelectionBox = {(event) => this.endSelectionBox(event)}
+          selectionBox = {this.state.selectionBox}
+        ></NotesArea>
+
       </div>
     );
   }
