@@ -23,7 +23,9 @@ function updateNote (master, event, index) {
 function selectNote (master, event, i) {
   const notes = master.state.notes;
 
-  if (!event.shiftKey) {
+  const noteClickedOn = event.target.parentNode.dataset.index;
+
+  if (!notes[noteClickedOn].selected && !event.shiftKey) {
     notes.forEach(note => {
       note.selected = false;
       note.movable = false;
@@ -115,7 +117,7 @@ function deselectNote (master, event) {
   let target;
 
   try {
-    target = event.nativeEvent.path[1].dataset.index;
+    target = event.target.parentNode.dataset.index;
   } catch (e) {}
 
   if (!target && !master.state.shiftKey) {

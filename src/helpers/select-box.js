@@ -1,7 +1,7 @@
 function start(master, event) {
   console.log('selection box visible');
 
-  if(!event.nativeEvent.path[1].dataset.index){
+  if(!event.target.parentNode.dataset.index){
     master.setState({
       selectionBox: {
         visible: true,

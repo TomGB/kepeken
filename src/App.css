@@ -1,7 +1,7 @@
-body, .root, .main, .noteContainer{
-  width: 200%;
-  height: 200vh;
+.noteContainer{
   display: inline-block;
+  width: 100%;
+  height: calc(100vh - 24px);
 }
 
 .selection-box {

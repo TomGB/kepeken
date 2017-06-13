@@ -1,3 +1,5 @@
+import {deselectNote} from './note-events'
+
 export default function addKeyEventListeners(master) {
   window.addEventListener("keydown", (e) => {
     if (e.key === 'Shift') {
@@ -8,7 +10,7 @@ export default function addKeyEventListeners(master) {
     };
 
     if(e.key === 'Escape') {
-      master.deselectNote(e);
+      deselectNote(master, e);
     }
   }, false);
 
