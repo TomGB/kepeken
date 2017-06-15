@@ -9,6 +9,7 @@ function createNote(master) {
 }
 
 function updateNote (master, event, index) {
+  event.preventDefault();
   const notes = master.state.notes;
 
   console.log(index);
@@ -21,6 +22,7 @@ function updateNote (master, event, index) {
 }
 
 function selectNote (master, event, i) {
+  event.preventDefault();
   const notes = master.state.notes;
 
   const noteClickedOn = event.target.parentNode.dataset.index;
@@ -36,15 +38,17 @@ function selectNote (master, event, i) {
   notes[i].movable = true;
 
   master.setState({
+    movingNotes: true,
     notes
   });
 }
 
 function moveNote (master, event, index) {
+  event.preventDefault();
   const notes = master.state.notes;
+  console.log('moving notes');
 
   if (master.state.movingNotes) {
-
     const notesToMove = [];
     notes.forEach(note => {
       if(note.movable && !note.editing) {
@@ -54,33 +58,39 @@ function moveNote (master, event, index) {
 
     console.log('notes to move:',notesToMove.length);
 
+    let x, y;
+
+    if(event.touches){
+      x = event.touches[0].pageX;
+      y = event.touches[0].pageY;
+    } else {
+      x = event.pageX;
+      y = event.pageY;
+    }
+
     if (notesToMove.length) {
-      if (event.buttons) {
-        notesToMove.forEach( note => {
-          if (note.oldX) {
-            note.X = event.clientX;
-            note.Y = event.clientY;
+      notesToMove.forEach( note => {
+        if (note.oldX) {
+          note.X = x;
+          note.Y = y;
 
-            const diffX = note.X - note.oldX;
-            const diffY = note.Y - note.oldY;
+          const diffX = note.X - note.oldX;
+          const diffY = note.Y - note.oldY;
 
-            note.style.left = note.style.left + diffX;
-            note.style.top = note.style.top + diffY;
+          note.style.left = note.style.left + diffX;
+          note.style.top = note.style.top + diffY;
 
-            note.oldX = note.X;
-            note.oldY = note.Y;
-          } else {
-            note.oldX = event.clientX;
-            note.oldY = event.clientY;
-          }
+          note.oldX = note.X;
+          note.oldY = note.Y;
+        } else {
+          note.oldX = x;
+          note.oldY = y;
+        }
 
-          master.setState({
-            notes
-          });
+        master.setState({
+          notes
         });
-      } else {
-        master.releaseNote();
-      }
+      });
     }
   }
 
@@ -104,34 +114,60 @@ function releaseNote (master) {
 }
 
 function editNote (master, event, i) {
-  const notes = master.state.notes;
-  notes[i].editing = true;
+  event.preventDefault();
 
-  master.setState({
-    notes
-  });
+  const notes = master.state.notes;
+
+  if (i !== undefined) {
+    notes[i].editing = true;
+    event.target.select();
+
+    master.setState({
+      notes
+    });
+  }
 }
 
 function deselectNote (master, event) {
+  event.preventDefault();
+
   const notes = master.state.notes;
-  let target;
+  const target = event.target.parentNode.dataset.index;
 
-  try {
-    target = event.target.parentNode.dataset.index;
-  } catch (e) {}
+  let currentTime;
 
-  if (!target && !master.state.shiftKey) {
-    console.log('deselecting all notes');
-    notes.forEach(note => {
-      note.selected = false;
-      note.editing = false;
-      note.editable = false;
+  if (target === master.state.doubleTapTarget) {
+
+    currentTime = new Date().getTime();
+    const tapLength = currentTime - master.state.lastTap;
+
+    if (tapLength < 500 && tapLength > 0) {
+      editNote(master, event, target);
+    }
+  }
+
+  let currentNoteSelected;
+
+  if (target !== undefined) {
+    currentNoteSelected  = notes[target].selected;
+  }
+
+  if (!currentNoteSelected && !master.state.shiftKey) {
+    // console.log('deselecting all notes');
+    notes.forEach((note, index) => {
+      if (index != target) {
+        note.selected = false;
+        note.editing = false;
+        note.editable = false;
+      }
     });
   }
 
   master.setState({
     notes,
     movingNotes: false,
+    lastTap: currentTime,
+    doubleTapTarget: target
   });
 }
 

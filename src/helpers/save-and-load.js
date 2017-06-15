@@ -1,7 +1,6 @@
-const copyToClipboard = require ('./clipboard.js')
+const { copyToClipboard } = require ('./clipboard.js');
 
 function saveState(master) {
-  console.log(master.state);
   copyToClipboard(JSON.stringify(master.state));
 }
 

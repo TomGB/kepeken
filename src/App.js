@@ -25,6 +25,7 @@ class App extends Component {
     return (
       <div className='main'
         onMouseMove={(event) => NoteEvents.moveNote(this, event)}
+        onTouchMove={(event) => NoteEvents.moveNote(this, event)}
         onMouseUp={() => NoteEvents.releaseNote(this)} >
         <div className='menu'>
           <button onClick={() => NoteEvents.createNote(this)} className='createNote' title='create note'>

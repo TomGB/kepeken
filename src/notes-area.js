@@ -5,10 +5,16 @@ export default function NotesArea({notes, updateNote, selectNote, editNote, dese
     <div
       className='noteContainer'
       onMouseDown={(event) => startSelectBox(event)}
+      onTouchStart={(event) => startSelectBox(event)}
       onMouseUp={(event) => {
         deselectNote(event)
         endSelectionBox(event)
       }}
+      onTouchEnd={(event) => {
+        deselectNote(event)
+        endSelectionBox(event)
+      }}
+      onTouchMove={(event) => drawSelectBox(event)}
       onMouseMove={(event) => drawSelectBox(event)}
     >
       {notes.map((note, index) =>
@@ -17,6 +23,7 @@ export default function NotesArea({notes, updateNote, selectNote, editNote, dese
           data-index={index}
           key={index}
           onMouseDown={(event) => selectNote(event, index)}
+          onTouchStart={(event) => selectNote(event, index)}
           style={note.style} >
           <textarea
             className='noteText'

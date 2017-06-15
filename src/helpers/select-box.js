@@ -1,30 +1,49 @@
 function start(master, event) {
-  console.log('selection box visible');
+  event.preventDefault();
 
-  if(!event.target.parentNode.dataset.index){
-    master.setState({
-      selectionBox: {
-        visible: true,
-        startX: event.clientX,
-        startY: event.clientY,
-        currentX: event.clientX,
-        currentY: event.clientY,
-        style: {},
-      }
-    });
+  let x, y;
+
+  if(event.touches){
+    x = event.touches[0].pageX;
+    y = event.touches[0].pageY;
   } else {
-    master.setState({
-      movingNotes: true,
-    });
+    x = event.pageX;
+    y = event.pageY;
+  }
+
+  if (event.button === 0 || event.button === undefined) {
+    if(!event.target.parentNode.dataset.index){
+      master.setState({
+        selectionBox: {
+          visible: true,
+          startX: x,
+          startY: y,
+          currentX: x,
+          currentY: y,
+          style: {},
+        }
+      });
+    }
   }
 }
 
 function draw(master, event) {
+  event.preventDefault();
+  let x, y;
+
+  if(event.touches){
+    x = event.touches[0].pageX;
+    y = event.touches[0].pageY;
+  } else {
+    x = event.pageX;
+    y = event.pageY;
+  }
+
   const selectionBox = master.state.selectionBox;
   if (selectionBox.visible) {
 
-    selectionBox.currentX = event.clientX;
-    selectionBox.currentY = event.clientY;
+    selectionBox.currentX = x;
+    selectionBox.currentY = y;
 
     if (selectionBox.startX < selectionBox.currentX) {
       selectionBox.style.left = selectionBox.startX;
@@ -49,7 +68,7 @@ function draw(master, event) {
 }
 
 function end(master, event) {
-  console.log('selection box invisitble');
+  event.preventDefault();
 
   let selectionBox = master.state.selectionBox;
 
@@ -62,7 +81,6 @@ function end(master, event) {
       note.style.left + 200 < selectionBox.style.left + selectionBox.style.width &&
       note.style.top + 200 < selectionBox.style.top + selectionBox.style.height
     ) {
-      console.log('note inside');
       note.selected = true;
       note.movable = true;
     }
