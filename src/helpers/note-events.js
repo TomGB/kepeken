@@ -116,7 +116,11 @@ function editNote (master, event, i) {
 
   const notes = master.state.notes;
 
-  if (i !== undefined) {
+  if (i !== null) {
+    notes.forEach(note => {
+      note.editing = false;
+    });
+    
     notes[i].editing = true;
 
     event.target.closest('.note').children[0].focus();
@@ -149,7 +153,9 @@ function deselectNote (master, event) {
 
   let currentNoteSelected;
 
-  if (target !== undefined) {
+  console.log(target);
+
+  if (target !== null) {
     currentNoteSelected  = notes[target].selected;
   }
 
