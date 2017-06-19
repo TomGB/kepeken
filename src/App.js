@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import NotesArea from './notes-area';
+import NotesArea from './NotesArea';
 import './App.css';
 import addKeyEventListeners from './helpers/key-listeners'
 import { saveState, loadState } from './helpers/save-and-load'
@@ -40,7 +40,6 @@ class App extends Component {
         </div>
         <NotesArea
           notes={this.state.notes}
-          className='NotesArea'
           updateNote={(event, index) => NoteEvents.updateNote(this, event, index)}
           selectNote={(event, index) => NoteEvents.selectNote(this, event, index)}
           editNote={(event, index) => NoteEvents.editNote(this, event, index)}

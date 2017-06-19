@@ -24,13 +24,14 @@ export default function NotesArea({notes, updateNote, selectNote, editNote, dese
           key={index}
           onMouseDown={(event) => selectNote(event, index)}
           onTouchStart={(event) => selectNote(event, index)}
+          onDoubleClick={(event) => editNote(event, index)}
           style={note.style} >
-          <textarea
+          <div
+            contentEditable={note.editable || note.editing}
             className='noteText'
             onChange={(event) => updateNote(event, index)}
-            readOnly={!(note.editable || note.editing)}
-            onDoubleClick={(event) => editNote(event, index)} >
-          </textarea>
+            style={{ 'max-height': note.style.height }} >
+          </div>
         </div>
       )}
       <div className={`selection-box${selectionBox.visible?'':' invisible'}`} style={selectionBox.style}>

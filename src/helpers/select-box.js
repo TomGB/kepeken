@@ -1,5 +1,5 @@
 function start(master, event) {
-  event.preventDefault();
+  // event.preventDefault();
 
   let x, y;
 
@@ -12,7 +12,7 @@ function start(master, event) {
   }
 
   if (event.button === 0 || event.button === undefined) {
-    if(!event.target.parentNode.dataset.index){
+    if(!event.target.dataset.index && !event.target.parentNode.dataset.index && !event.target.parentNode.parentNode.dataset.index){
       master.setState({
         selectionBox: {
           visible: true,
@@ -28,7 +28,7 @@ function start(master, event) {
 }
 
 function draw(master, event) {
-  event.preventDefault();
+  // event.preventDefault();
   let x, y;
 
   if(event.touches){
@@ -68,7 +68,7 @@ function draw(master, event) {
 }
 
 function end(master, event) {
-  event.preventDefault();
+  // event.preventDefault();
 
   let selectionBox = master.state.selectionBox;
 
@@ -76,10 +76,10 @@ function end(master, event) {
 
   notes.forEach(note => {
     if (
-      note.style.left > selectionBox.style.left &&
-      note.style.top > selectionBox.style.top &&
-      note.style.left + 200 < selectionBox.style.left + selectionBox.style.width &&
-      note.style.top + 200 < selectionBox.style.top + selectionBox.style.height
+      note.style.left >= selectionBox.style.left &&
+      note.style.top >= selectionBox.style.top &&
+      note.style.left + note.style.width < selectionBox.style.left + selectionBox.style.width &&
+      note.style.top + note.style.height < selectionBox.style.top + selectionBox.style.height
     ) {
       note.selected = true;
       note.movable = true;
