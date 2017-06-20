@@ -19,10 +19,6 @@
   position: absolute;
   box-sizing: border-box;
 
-  min-width: 200px;
-  min-height: 200px;
-  height: 200px;
-  width: 200px;
   background-color: lightblue;
   display: inline-block;
 
@@ -30,14 +26,20 @@
 }
 
 .noteText {
+  width: 100%;
   box-sizing: border-box; /* fit parent width */
   border: none;
-  width: 100%;
-  min-height: 100%;
-  height: 100%;
   background-color: transparent;
   font-size: 20px;
   outline: none;
+  text-align: center;
+  font-size: 25pt;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  resize: none;
+  overflow: auto;
 }
 
 .note.selected {

@@ -1,7 +1,7 @@
 function createNote(master) {
   const notes = master.state.notes;
 
-  notes.push({ style: { top: 100, left: 100 } });
+  notes.push({ style: { top: 100, left: 100, height: 200, width: 350 } });
 
   master.setState({
     notes
@@ -9,7 +9,7 @@ function createNote(master) {
 }
 
 function updateNote (master, event, index) {
-  event.preventDefault();
+  // event.preventDefault();
   const notes = master.state.notes;
 
   console.log(index);
@@ -22,12 +22,10 @@ function updateNote (master, event, index) {
 }
 
 function selectNote (master, event, i) {
-  event.preventDefault();
+  // event.preventDefault();
   const notes = master.state.notes;
 
-  const noteClickedOn = event.target.parentNode.dataset.index;
-
-  if (!notes[noteClickedOn].selected && !event.shiftKey) {
+  if (!notes[i].selected && !event.shiftKey) {
     notes.forEach(note => {
       note.selected = false;
       note.movable = false;
@@ -44,7 +42,7 @@ function selectNote (master, event, i) {
 }
 
 function moveNote (master, event, index) {
-  event.preventDefault();
+  // event.preventDefault();
   const notes = master.state.notes;
   console.log('moving notes');
 
@@ -114,13 +112,18 @@ function releaseNote (master) {
 }
 
 function editNote (master, event, i) {
-  event.preventDefault();
+  // event.preventDefault();
 
   const notes = master.state.notes;
 
-  if (i !== undefined) {
+  if (i !== null) {
+    notes.forEach(note => {
+      note.editing = false;
+    });
+    
     notes[i].editing = true;
-    event.target.select();
+
+    event.target.closest('.note').children[0].focus();
 
     master.setState({
       notes
@@ -129,10 +132,12 @@ function editNote (master, event, i) {
 }
 
 function deselectNote (master, event) {
-  event.preventDefault();
+  // event.preventDefault();
 
   const notes = master.state.notes;
-  const target = event.target.parentNode.dataset.index;
+  let target = event.target.closest('.note');
+
+  target = target && target.dataset.index;
 
   let currentTime;
 
@@ -148,14 +153,16 @@ function deselectNote (master, event) {
 
   let currentNoteSelected;
 
-  if (target !== undefined) {
+  console.log(target);
+
+  if (target !== null) {
     currentNoteSelected  = notes[target].selected;
   }
 
   if (!currentNoteSelected && !master.state.shiftKey) {
     // console.log('deselecting all notes');
     notes.forEach((note, index) => {
-      if (index != target) {
+      if (index !== target) {
         note.selected = false;
         note.editing = false;
         note.editable = false;
