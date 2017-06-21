@@ -41,18 +41,24 @@ function selectNote (master, event, i) {
   });
 }
 
+function getNotesToMove(notes) {
+  const notesToMove = [];
+  notes.forEach(note => {
+    if(note.movable && !note.editing) {
+      notesToMove.push(note);
+    }
+  });
+
+  return notesToMove;
+}
+
 function moveNote (master, event, index) {
   // event.preventDefault();
   const notes = master.state.notes;
   console.log('moving notes');
 
   if (master.state.movingNotes) {
-    const notesToMove = [];
-    notes.forEach(note => {
-      if(note.movable && !note.editing) {
-        notesToMove.push(note);
-      }
-    })
+    const notesToMove = this.getNotesToMove(notes);
 
     console.log('notes to move:',notesToMove.length);
 
@@ -91,7 +97,6 @@ function moveNote (master, event, index) {
       });
     }
   }
-
 }
 
 function releaseNote (master) {
@@ -120,7 +125,7 @@ function editNote (master, event, i) {
     notes.forEach(note => {
       note.editing = false;
     });
-    
+
     notes[i].editing = true;
 
     event.target.closest('.note').children[0].focus();
@@ -186,4 +191,5 @@ module.exports = {
   selectNote,
   updateNote,
   createNote,
+  getNotesToMove
 }
