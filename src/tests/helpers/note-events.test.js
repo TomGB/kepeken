@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from '../../App';
-import NoteEvents from '../../helpers/note-events';
+import * as NoteEvents from '../../helpers/note-events';
 import assert from 'assert';
 import {mount, render, shallow} from 'enzyme'
+import proxyquire from 'proxyquire'
 
 describe('NoteEvents', () => {
   describe('createNote', () => {
@@ -275,6 +276,7 @@ describe('NoteEvents', () => {
         assert.deepEqual(notesToMove, [{ ...inputNotes[1] }, { ...inputNotes[3] }])
       });
     });
+
     describe('moveNote', () => {
       it('does nothing if notes not set to moving', () => {
         let setState;
@@ -296,24 +298,248 @@ describe('NoteEvents', () => {
         assert.equal(setState, undefined);
       });
 
-      it('does nothing if notes not set to moving', () => {
+      it('moves a single selected note', () => {
         let setState;
 
         const master = {
           setState: (input) => {setState = input},
-          movingNotes: false,
           state: {
-            notes: []
+            movingNotes: true,
+            notes: [{
+              movable: true,
+              editing: false,
+              oldX: 150,
+              oldY: 200,
+              style: {
+                left: 100,
+                top: 150
+              }
+            },
+            {
+              movable: false,
+              editing: false,
+              oldX: 100,
+              oldY: 150,
+              style: {
+                left: 100,
+                top: 150
+              }
+            }]
           }
         };
 
-        const event = {}
+        const event = {
+          pageX: 200,
+          pageY: 300
+        }
 
         const index = 2;
 
         NoteEvents.moveNote(master, event, index);
 
-        assert.equal(setState, undefined);
+        assert.equal(setState.notes[0].style.left, 150);
+        assert.equal(setState.notes[0].style.top, 250);
+        assert.equal(setState.notes[0].oldX, 200);
+        assert.equal(setState.notes[0].oldY, 300);
+
+        assert.equal(setState.notes[1].style.left, 100);
+        assert.equal(setState.notes[1].style.top, 150);
+        assert.equal(setState.notes[1].oldX, 100);
+        assert.equal(setState.notes[1].oldY, 150);
+      });
+
+      it('moves a multiple selected notes', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            movingNotes: true,
+            notes: [{
+              movable: true,
+              editing: false,
+              oldX: 150,
+              oldY: 200,
+              style: {
+                left: 100,
+                top: 150
+              }
+            },
+            {
+              movable: true,
+              editing: false,
+              oldX: 100,
+              oldY: 150,
+              style: {
+                left: 100,
+                top: 150
+              }
+            }]
+          }
+        };
+
+        const event = {
+          pageX: 200,
+          pageY: 300
+        }
+
+        const index = 2;
+
+        NoteEvents.moveNote(master, event, index);
+
+        assert.equal(setState.notes[0].style.left, 150);
+        assert.equal(setState.notes[0].style.top, 250);
+        assert.equal(setState.notes[0].oldX, 200);
+        assert.equal(setState.notes[0].oldY, 300);
+
+        assert.equal(setState.notes[1].style.left, 200);
+        assert.equal(setState.notes[1].style.top, 300);
+        assert.equal(setState.notes[1].oldX, 200);
+        assert.equal(setState.notes[1].oldY, 300);
+      });
+    });
+
+    describe('releaseNote', () =>{
+      it('sets movable to false when notes are not selected', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            movingNotes: true,
+            notes: [{
+              selected: false,
+              movable: true,
+              editing: false,
+              oldX: 150,
+              oldY: 200,
+              style: {
+                left: 100,
+                top: 150
+              }
+            },
+            {
+              selected: true,
+              movable: true,
+              editing: false,
+              oldX: 100,
+              oldY: 150,
+              style: {
+                left: 100,
+                top: 150
+              }
+            }]
+          }
+        };
+
+        NoteEvents.releaseNote(master);
+
+        assert.equal(setState.notes[0].movable, false);
+        assert.equal(setState.notes[1].movable, true);
+      });
+
+      it('sets X and Y to null', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            movingNotes: true,
+            notes: [{
+              selected: false,
+              movable: true,
+              editing: false,
+              oldX: 150,
+              oldY: 200,
+              style: {
+                left: 100,
+                top: 150
+              }
+            },
+            {
+              selected: true,
+              movable: true,
+              editing: false,
+              oldX: 100,
+              oldY: 150,
+              style: {
+                left: 100,
+                top: 150
+              }
+            }]
+          }
+        };
+
+        NoteEvents.releaseNote(master);
+
+        assert.equal(setState.notes[0].oldX, null);
+        assert.equal(setState.notes[0].oldY, null);
+        assert.equal(setState.notes[1].oldX, null);
+        assert.equal(setState.notes[1].oldY, null);
+      });
+    });
+
+    describe('editNote', () => {
+      let setState;
+
+      const master = {
+        setState: (input) => {setState = input},
+        state: {
+          movingNotes: true,
+          notes: [{
+            editing: false,
+          },
+          {
+            editing: true,
+          },
+          {
+            editing: false,
+          }]
+        }
+      };
+
+      let focus = null;
+
+      const event = {
+        target: {
+          closest: () => {
+            return {
+              children: [{
+                focus: () => {
+                  focus = true;
+                }
+              }]
+            };
+          }
+        }
+      }
+
+      it ('sets note to editing', () => {
+        const index = 0;
+
+        NoteEvents.editNote(master, event, index);
+
+        assert(setState.notes[0].editing);
+      });
+
+      it ('sets other notes to not editing', () => {
+        const index = 0;
+
+        NoteEvents.editNote(master, event, index);
+
+        assert(setState.notes[0].editing);
+        assert(!setState.notes[1].editing);
+        assert(!setState.notes[2].editing);
+      });
+
+      it ('sets focus on note', () => {
+        focus = null;
+        
+        const index = 0;
+
+        NoteEvents.editNote(master, event, index);
+
+        assert(focus);
       });
     });
   });

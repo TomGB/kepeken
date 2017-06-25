@@ -12,8 +12,11 @@
     "chai-enzyme": "^0.7.1",
     "enzyme": "^2.8.2",
     "mocha": "^3.4.2",
+    "proxyquire": "^1.8.0",
     "react-addons-test-utils": "^15.6.0",
-    "react-scripts": "1.0.7"
+    "react-scripts": "1.0.7",
+    "rewire": "^2.5.2",
+    "rewire-webpack": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

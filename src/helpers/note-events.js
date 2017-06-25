@@ -12,8 +12,6 @@ function updateNote (master, event, index) {
   // event.preventDefault();
   const notes = master.state.notes;
 
-  console.log(index);
-
   notes[index].content = event.target.value;
 
   master.setState({
@@ -55,12 +53,9 @@ function getNotesToMove(notes) {
 function moveNote (master, event, index) {
   // event.preventDefault();
   const notes = master.state.notes;
-  console.log('moving notes');
 
   if (master.state.movingNotes) {
-    const notesToMove = this.getNotesToMove(notes);
-
-    console.log('notes to move:',notesToMove.length);
+    const notesToMove = getNotesToMove(notes);
 
     let x, y;
 
@@ -75,17 +70,14 @@ function moveNote (master, event, index) {
     if (notesToMove.length) {
       notesToMove.forEach( note => {
         if (note.oldX) {
-          note.X = x;
-          note.Y = y;
-
-          const diffX = note.X - note.oldX;
-          const diffY = note.Y - note.oldY;
+          const diffX = x - note.oldX;
+          const diffY = y - note.oldY;
 
           note.style.left = note.style.left + diffX;
           note.style.top = note.style.top + diffY;
 
-          note.oldX = note.X;
-          note.oldY = note.Y;
+          note.oldX = x;
+          note.oldY = y;
         } else {
           note.oldX = x;
           note.oldY = y;
@@ -157,8 +149,6 @@ function deselectNote (master, event) {
   }
 
   let currentNoteSelected;
-
-  console.log(target);
 
   if (target !== null) {
     currentNoteSelected  = notes[target].selected;
