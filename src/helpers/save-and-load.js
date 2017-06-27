@@ -4,7 +4,7 @@ function saveState(master) {
   copyToClipboard(JSON.stringify(master.state));
 }
 
-function loadState(master) {
+function loadState(master, prompt = prompt) {
   const state = prompt("Please enter the json:", "");
 
   let stateObject;
@@ -15,8 +15,7 @@ function loadState(master) {
       master.setState(stateObject);
     }
   } catch (e) {
-    console.log(e);
-    alert(e)
+    alert(JSON.stringify(e));
   }
 }
 
