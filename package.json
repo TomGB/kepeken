@@ -16,7 +16,8 @@
     "react-addons-test-utils": "^15.6.0",
     "react-scripts": "1.0.7",
     "rewire": "^2.5.2",
-    "rewire-webpack": "^1.0.1"
+    "rewire-webpack": "^1.0.1",
+    "window-mock": "0.0.13"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -139,12 +139,11 @@ function deselectNote (master, event) {
   let currentTime;
 
   if (target === master.state.doubleTapTarget) {
-
     currentTime = new Date().getTime();
     const tapLength = currentTime - master.state.lastTap;
 
     if (tapLength < 500 && tapLength > 0) {
-      editNote(master, event, target);
+      this.editNote(master, event, target);
     }
   }
 
@@ -155,7 +154,6 @@ function deselectNote (master, event) {
   }
 
   if (!currentNoteSelected && !master.state.shiftKey) {
-    // console.log('deselecting all notes');
     notes.forEach((note, index) => {
       if (index !== target) {
         note.selected = false;

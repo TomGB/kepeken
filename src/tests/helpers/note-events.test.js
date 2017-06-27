@@ -534,12 +534,290 @@ describe('NoteEvents', () => {
 
       it ('sets focus on note', () => {
         focus = null;
-        
+
         const index = 0;
 
         NoteEvents.editNote(master, event, index);
 
         assert(focus);
+      });
+    });
+
+    describe('deselectNote', () => {
+      it('deselects all notes', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            notes: [{
+              selected: true,
+              editing: true,
+              editable: true,
+            }, {
+              selected: true,
+              editing: false,
+              editable: true,
+            }, {
+              selected: true,
+              editing: false,
+              editable: true,
+            }]
+          }
+        };
+
+        const event = {
+          target: {
+            closest: () => {
+              return null;
+            }
+          }
+        }
+
+        NoteEvents.deselectNote(master, event);
+
+        setState.notes.forEach(note => {
+          assert(!note.selected)
+          assert(!note.editing)
+          assert(!note.editable)
+        });
+      });
+
+      it('doesn\'t deselects notes if shift is held', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            notes: [{
+              selected: true,
+              editing: true,
+              editable: true,
+            }, {
+              selected: true,
+              editing: false,
+              editable: true,
+            }, {
+              selected: true,
+              editing: false,
+              editable: true,
+            }],
+            shiftKey: true,
+          }
+        };
+
+        const event = {
+          target: {
+            closest: () => {
+              return null;
+            }
+          }
+        }
+
+        NoteEvents.deselectNote(master, event);
+
+        setState.notes.forEach((note, index) => {
+          assert(note.selected);
+        });
+      });
+
+      it('doesn\'t deselects notes if mouseup was on a selected note', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            notes: [{
+              selected: true,
+              editing: true,
+              editable: true,
+            }, {
+              selected: true,
+              editing: false,
+              editable: true,
+            }, {
+              selected: true,
+              editing: false,
+              editable: true,
+            }]
+          }
+        };
+
+        const event = {
+          target: {
+            closest: () => {
+              return {
+                dataset: {
+                  index: 0
+                }
+              };
+            }
+          }
+        }
+
+        NoteEvents.deselectNote(master, event);
+
+        setState.notes.forEach((note, index) => {
+          assert(note.selected);
+        });
+      });
+
+      it('sets not editing and not selected on all notes but the target note', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            notes: [{
+              selected: false,
+              editing: true,
+              editable: true,
+            }, {
+              selected: true,
+              editing: false,
+              editable: true,
+            }, {
+              selected: true,
+              editing: false,
+              editable: true,
+            }]
+          }
+        };
+
+        const event = {
+          target: {
+            closest: () => {
+              return {
+                dataset: {
+                  index: 0
+                }
+              };
+            }
+          }
+        }
+
+        NoteEvents.deselectNote(master, event);
+
+        assert(!setState.notes[0].selected);
+        assert(setState.notes[0].editing);
+        assert(setState.notes[0].editable);
+        assert(!setState.notes[1].selected);
+        assert(!setState.notes[1].editing);
+        assert(!setState.notes[1].editable);
+        assert(!setState.notes[2].selected);
+        assert(!setState.notes[2].editing);
+        assert(!setState.notes[2].editable);
+      });
+
+      it('sets doubleTapTarget', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            notes: [{
+              selected: false,
+              editing: true,
+              editable: true,
+            }]
+          }
+        };
+
+        const event = {
+          target: {
+            closest: () => {
+              return {
+                dataset: {
+                  index: 0
+                }
+              };
+            }
+          }
+        }
+
+        NoteEvents.deselectNote(master, event);
+
+        assert(!setState.movingNotes);
+        assert(!setState.lastTap);
+        assert.equal(setState.doubleTapTarget, 0);
+      });
+
+      it('if click on double tap target set lastTap time', () => {
+        let setState;
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            notes: [{
+              selected: false,
+              editing: true,
+              editable: true,
+            }],
+            doubleTapTarget: 0
+          }
+        };
+
+        const event = {
+          target: {
+            closest: () => {
+              return {
+                dataset: {
+                  index: 0
+                }
+              };
+            }
+          }
+        }
+
+        NoteEvents.deselectNote(master, event);
+
+        const currentTime = new Date().getTime();
+
+        assert.equal(setState.lastTap, currentTime);
+      });
+
+      it('if tap was less than 500ms long then call edit note', () => {
+        let setState;
+
+        const currentTime = new Date().getTime();
+
+        const master = {
+          setState: (input) => {setState = input},
+          state: {
+            notes: [{
+              selected: false,
+              editing: true,
+              editable: true,
+            }],
+            doubleTapTarget: 0,
+            lastTap: currentTime - 400
+          }
+        };
+
+        const event = {
+          target: {
+            closest: () => {
+              return {
+                dataset: {
+                  index: 0
+                }
+              };
+            }
+          }
+        }
+
+        let editNoteCalled = false;
+
+        const MockNoteEvents = {
+          deselectNote: NoteEvents.deselectNote,
+          editNote: () => {
+            editNoteCalled = true;
+          }
+        }
+
+        MockNoteEvents.deselectNote(master, event);
+
+        assert(editNoteCalled)
       });
     });
   });
