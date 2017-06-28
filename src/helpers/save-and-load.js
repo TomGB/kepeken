@@ -9,7 +9,10 @@ function loadState(master, userPrompt = prompt) {
 
   let stateObject;
   try {
-    stateObject = JSON.parse(state);
+    stateObject = {
+      ...JSON.parse(state),
+      loading: true
+    };
 
     if (stateObject) {
       master.setState(stateObject);

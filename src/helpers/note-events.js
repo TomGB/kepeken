@@ -12,7 +12,7 @@ function updateNote (master, event, index) {
   // event.preventDefault();
   const notes = master.state.notes;
 
-  notes[index].content = event.target.value;
+  notes[index].content = event.target.innerHTML;
 
   master.setState({
     notes

@@ -39,7 +39,8 @@ class App extends Component {
           </button>
         </div>
         <NotesArea
-          notes={this.state.notes}
+          setState={(input) => this.setState(input)}
+          state={this.state}
           updateNote={(event, index) => NoteEvents.updateNote(this, event, index)}
           selectNote={(event, index) => NoteEvents.selectNote(this, event, index)}
           editNote={(event, index) => NoteEvents.editNote(this, event, index)}
@@ -49,7 +50,6 @@ class App extends Component {
           endSelectionBox = {(event) => SelectBox.end(this, event)}
           selectionBox = {this.state.selectionBox}
         ></NotesArea>
-
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function NotesArea({notes, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
+export default function NotesArea({setState, state, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
   return (
     <div
       className='noteContainer'
@@ -17,7 +17,15 @@ export default function NotesArea({notes, updateNote, selectNote, editNote, dese
       onTouchMove={(event) => drawSelectBox(event)}
       onMouseMove={(event) => drawSelectBox(event)}
     >
-      {notes.map((note, index) =>
+      {state.notes.map((note, index) => {
+        let content;
+        if (state.loading) {
+          setState({ loading: false });
+          console.log(note.content);
+          content = note.content
+        }
+        // https://stackoverflow.com/questions/22677931/react-js-onchange-event-for-contenteditable
+        return (
         <div
           className={`note${note.selected?' selected':''}`}
           data-index={index}
@@ -29,11 +37,13 @@ export default function NotesArea({notes, updateNote, selectNote, editNote, dese
           <div
             contentEditable={note.editable || note.editing}
             className='noteText'
-            onChange={(event) => updateNote(event, index)}
+            onKeyUp={(event) => updateNote(event, index)}
             style={{ 'max-height': note.style.height }} >
+            {content}
           </div>
         </div>
-      )}
+      )
+      })}
       <div className={`selection-box${selectionBox.visible?'':' invisible'}`} style={selectionBox.style}>
       </div>
     </div>
