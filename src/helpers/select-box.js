@@ -1,3 +1,11 @@
+function isClickOnNote(event) {
+  return (
+    event.target.dataset.index ||
+    event.target.parentNode.dataset.index ||
+    event.target.parentNode.parentNode.dataset.index
+  );
+}
+
 function start(master, event) {
   // event.preventDefault();
 
@@ -12,7 +20,7 @@ function start(master, event) {
   }
 
   if (event.button === 0 || event.button === undefined) {
-    if(!event.target.dataset.index && !event.target.parentNode.dataset.index && !event.target.parentNode.parentNode.dataset.index){
+    if(!isClickOnNote(event)){
       master.setState({
         selectionBox: {
           visible: true,

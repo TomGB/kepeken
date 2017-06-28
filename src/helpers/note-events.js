@@ -12,8 +12,6 @@ function updateNote (master, event, index) {
   // event.preventDefault();
   const notes = master.state.notes;
 
-  console.log(index);
-
   notes[index].content = event.target.value;
 
   master.setState({
@@ -41,20 +39,23 @@ function selectNote (master, event, i) {
   });
 }
 
+function getNotesToMove(notes) {
+  const notesToMove = [];
+  notes.forEach(note => {
+    if(note.movable && !note.editing) {
+      notesToMove.push(note);
+    }
+  });
+
+  return notesToMove;
+}
+
 function moveNote (master, event, index) {
   // event.preventDefault();
   const notes = master.state.notes;
-  console.log('moving notes');
 
   if (master.state.movingNotes) {
-    const notesToMove = [];
-    notes.forEach(note => {
-      if(note.movable && !note.editing) {
-        notesToMove.push(note);
-      }
-    })
-
-    console.log('notes to move:',notesToMove.length);
+    const notesToMove = getNotesToMove(notes);
 
     let x, y;
 
@@ -69,17 +70,14 @@ function moveNote (master, event, index) {
     if (notesToMove.length) {
       notesToMove.forEach( note => {
         if (note.oldX) {
-          note.X = x;
-          note.Y = y;
-
-          const diffX = note.X - note.oldX;
-          const diffY = note.Y - note.oldY;
+          const diffX = x - note.oldX;
+          const diffY = y - note.oldY;
 
           note.style.left = note.style.left + diffX;
           note.style.top = note.style.top + diffY;
 
-          note.oldX = note.X;
-          note.oldY = note.Y;
+          note.oldX = x;
+          note.oldY = y;
         } else {
           note.oldX = x;
           note.oldY = y;
@@ -91,7 +89,6 @@ function moveNote (master, event, index) {
       });
     }
   }
-
 }
 
 function releaseNote (master) {
@@ -120,7 +117,7 @@ function editNote (master, event, i) {
     notes.forEach(note => {
       note.editing = false;
     });
-    
+
     notes[i].editing = true;
 
     event.target.closest('.note').children[0].focus();
@@ -142,25 +139,21 @@ function deselectNote (master, event) {
   let currentTime;
 
   if (target === master.state.doubleTapTarget) {
-
     currentTime = new Date().getTime();
     const tapLength = currentTime - master.state.lastTap;
 
     if (tapLength < 500 && tapLength > 0) {
-      editNote(master, event, target);
+      this.editNote(master, event, target);
     }
   }
 
   let currentNoteSelected;
-
-  console.log(target);
 
   if (target !== null) {
     currentNoteSelected  = notes[target].selected;
   }
 
   if (!currentNoteSelected && !master.state.shiftKey) {
-    // console.log('deselecting all notes');
     notes.forEach((note, index) => {
       if (index !== target) {
         note.selected = false;
@@ -186,4 +179,5 @@ module.exports = {
   selectNote,
   updateNote,
   createNote,
+  getNotesToMove
 }

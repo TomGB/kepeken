@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import SelectBox from './helpers/select-box';
+import App from '../App';
 import assert from 'assert';
 import {mount, render, shallow} from 'enzyme'
 

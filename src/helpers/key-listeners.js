@@ -1,6 +1,6 @@
 import {deselectNote} from './note-events'
 
-export default function addKeyEventListeners(master) {
+export default function addKeyEventListeners(master, window = global.window) {
   window.addEventListener("keydown", (e) => {
     if (e.key === 'Shift') {
       master.setState({
