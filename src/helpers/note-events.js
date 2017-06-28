@@ -52,41 +52,46 @@ function getNotesToMove(notes) {
 
 function moveNote (master, event, index) {
   // event.preventDefault();
-  const notes = master.state.notes;
 
-  if (master.state.movingNotes) {
-    const notesToMove = getNotesToMove(notes);
+  if (!event.buttons) {
+    this.releaseNote(master);
+  } else {
+    const notes = master.state.notes;
 
-    let x, y;
+    if (master.state.movingNotes) {
+      const notesToMove = getNotesToMove(notes);
 
-    if(event.touches){
-      x = event.touches[0].pageX;
-      y = event.touches[0].pageY;
-    } else {
-      x = event.pageX;
-      y = event.pageY;
-    }
+      let x, y;
 
-    if (notesToMove.length) {
-      notesToMove.forEach( note => {
-        if (note.oldX) {
-          const diffX = x - note.oldX;
-          const diffY = y - note.oldY;
+      if(event.touches){
+        x = event.touches[0].pageX;
+        y = event.touches[0].pageY;
+      } else {
+        x = event.pageX;
+        y = event.pageY;
+      }
 
-          note.style.left = note.style.left + diffX;
-          note.style.top = note.style.top + diffY;
+      if (notesToMove.length) {
+        notesToMove.forEach( note => {
+          if (note.oldX) {
+            const diffX = x - note.oldX;
+            const diffY = y - note.oldY;
 
-          note.oldX = x;
-          note.oldY = y;
-        } else {
-          note.oldX = x;
-          note.oldY = y;
-        }
+            note.style.left = note.style.left + diffX;
+            note.style.top = note.style.top + diffY;
 
-        master.setState({
-          notes
+            note.oldX = x;
+            note.oldY = y;
+          } else {
+            note.oldX = x;
+            note.oldY = y;
+          }
+
+          master.setState({
+            notes
+          });
         });
-      });
+      }
     }
   }
 }

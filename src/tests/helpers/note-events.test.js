@@ -5,6 +5,7 @@ import * as NoteEvents from '../../helpers/note-events';
 import assert from 'assert';
 import {mount, render, shallow} from 'enzyme'
 import proxyquire from 'proxyquire'
+import sinon from 'sinon'
 
 describe('NoteEvents', () => {
   describe('createNote', () => {
@@ -289,7 +290,9 @@ describe('NoteEvents', () => {
           }
         };
 
-        const event = {}
+        const event = {
+          buttons: 1
+        }
 
         const index = 2;
 
@@ -329,6 +332,7 @@ describe('NoteEvents', () => {
         };
 
         const event = {
+          buttons: 1,
           pageX: 200,
           pageY: 300
         }
@@ -379,6 +383,7 @@ describe('NoteEvents', () => {
         };
 
         const event = {
+          buttons: 1,
           pageX: 200,
           pageY: 300
         }
@@ -396,6 +401,25 @@ describe('NoteEvents', () => {
         assert.equal(setState.notes[1].style.top, 300);
         assert.equal(setState.notes[1].oldX, 200);
         assert.equal(setState.notes[1].oldY, 300);
+      });
+
+      it('releases note if mouse button released', () => {
+        let releaseCalled = false;
+
+        const MockNoteEvents = {
+          ...NoteEvents,
+          releaseNote: () => {
+            releaseCalled = true;
+          }
+        }
+
+        const event = {
+          buttons: 0
+        }
+
+        MockNoteEvents.moveNote({}, event);
+
+        assert(releaseCalled)
       });
     });
 
@@ -768,6 +792,8 @@ describe('NoteEvents', () => {
             }
           }
         }
+
+        var clock = sinon.useFakeTimers();
 
         NoteEvents.deselectNote(master, event);
 

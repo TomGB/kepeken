@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import App from '../../App';
 import SelectBox from '../../helpers/select-box';
 import assert from 'assert';
-import {mount, render, shallow} from 'enzyme'
 
 const exampleNotes = [{
   style: {
@@ -191,6 +190,7 @@ describe('SelectBox', () => {
       }
 
       const event = {
+        buttons: 1,
         touches: false,
         pageX: 120,
         pageY: 120,
@@ -239,6 +239,7 @@ describe('SelectBox', () => {
       }
 
       const event = {
+        buttons: 1,
         touches: [{
           pageX: 120,
           pageY: 120,
@@ -288,6 +289,7 @@ describe('SelectBox', () => {
       }
 
       const event = {
+        buttons: 1,
         touches: [{
           pageX: 120,
           pageY: 120,
@@ -297,6 +299,30 @@ describe('SelectBox', () => {
       SelectBox.draw(master, event);
 
       assert.equal(setState, undefined);
+    });
+
+    it('stops drawing if mouse is released', () => {
+
+      const event = {
+        buttons: 0,
+        touches: [{
+          pageX: 120,
+          pageY: 120,
+        }]
+      }
+
+      let endCaleed = false;
+
+      const MockSelectBox = {
+        ...SelectBox,
+        end: () => {
+          endCaleed = true;
+        }
+      }
+
+      MockSelectBox.draw({}, event);
+
+      assert(endCaleed);
     });
   });
 });

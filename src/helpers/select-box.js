@@ -36,42 +36,47 @@ function start(master, event) {
 }
 
 function draw(master, event) {
-  // event.preventDefault();
-  let x, y;
+  // event.preventDefault()
 
-  if(event.touches){
-    x = event.touches[0].pageX;
-    y = event.touches[0].pageY;
+  if (!event.buttons) {
+    this.end(master, event);
   } else {
-    x = event.pageX;
-    y = event.pageY;
-  }
+    let x, y;
 
-  const selectionBox = master.state.selectionBox;
-  if (selectionBox.visible) {
-
-    selectionBox.currentX = x;
-    selectionBox.currentY = y;
-
-    if (selectionBox.startX < selectionBox.currentX) {
-      selectionBox.style.left = selectionBox.startX;
-      selectionBox.style.width = selectionBox.currentX - selectionBox.startX;
+    if (event.touches) {
+      x = event.touches[0].pageX;
+      y = event.touches[0].pageY;
     } else {
-      selectionBox.style.left = selectionBox.currentX;
-      selectionBox.style.width = selectionBox.startX - selectionBox.currentX;
+      x = event.pageX;
+      y = event.pageY;
     }
 
-    if (selectionBox.startY < selectionBox.currentY) {
-      selectionBox.style.top = selectionBox.startY;
-      selectionBox.style.height = selectionBox.currentY - selectionBox.startY;
-    } else {
-      selectionBox.style.top = selectionBox.currentY;
-      selectionBox.style.height = selectionBox.startY - selectionBox.currentY;
-    }
+    const selectionBox = master.state.selectionBox;
+    if (selectionBox.visible) {
 
-    master.setState({
-        selectionBox
-    });
+      selectionBox.currentX = x;
+      selectionBox.currentY = y;
+
+      if (selectionBox.startX < selectionBox.currentX) {
+        selectionBox.style.left = selectionBox.startX;
+        selectionBox.style.width = selectionBox.currentX - selectionBox.startX;
+      } else {
+        selectionBox.style.left = selectionBox.currentX;
+        selectionBox.style.width = selectionBox.startX - selectionBox.currentX;
+      }
+
+      if (selectionBox.startY < selectionBox.currentY) {
+        selectionBox.style.top = selectionBox.startY;
+        selectionBox.style.height = selectionBox.currentY - selectionBox.startY;
+      } else {
+        selectionBox.style.top = selectionBox.currentY;
+        selectionBox.style.height = selectionBox.startY - selectionBox.currentY;
+      }
+
+      master.setState({
+          selectionBox
+      });
+    }
   }
 }
 

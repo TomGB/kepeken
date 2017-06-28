@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from '../App';
 import assert from 'assert';
-import {mount, render, shallow} from 'enzyme'
+import {mount, render} from 'enzyme'
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
