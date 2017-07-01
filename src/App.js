@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import NotesArea from './NotesArea';
 import './App.css';
 import addKeyEventListeners from './helpers/key-listeners'
+import addWindowLeaveMessage from './helpers/leave-message'
 import { saveState, loadState } from './helpers/save-and-load'
 import SelectBox from './helpers/select-box'
 import NoteEvents from './helpers/note-events.js'
@@ -17,6 +18,8 @@ class App extends Component {
         style: {},
       }
     };
+
+    addWindowLeaveMessage(this)
 
     addKeyEventListeners(this);
   }
