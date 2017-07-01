@@ -1,9 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from '../../App';
 import addKeyEventListeners from '../../helpers/key-listeners';
 import assert from 'assert';
-import {mount, render, shallow} from 'enzyme'
 import {deselectNote} from '../../helpers/note-events'
 jest.mock('../../helpers/note-events', () => ({
   deselectNote: jest.fn()
