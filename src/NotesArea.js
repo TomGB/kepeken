@@ -1,7 +1,7 @@
 import React from 'react';
 import ContentEditable from 'react-contenteditable';
 
-export default function NotesArea({setState, state, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
+export default function NotesArea({state, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
   return (
     <div
       className='noteContainer'

@@ -39,7 +39,6 @@ class App extends Component {
           </button>
         </div>
         <NotesArea
-          setState={(input) => this.setState(input)}
           state={this.state}
           updateNote={(event, index) => NoteEvents.updateNote(this, event, index)}
           selectNote={(event, index) => NoteEvents.selectNote(this, event, index)}
