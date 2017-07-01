@@ -304,11 +304,7 @@ describe('SelectBox', () => {
     it('stops drawing if mouse is released', () => {
 
       const event = {
-        buttons: 0,
-        touches: [{
-          pageX: 120,
-          pageY: 120,
-        }]
+        buttons: 0
       }
 
       let endCaleed = false;

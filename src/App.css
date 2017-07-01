@@ -1,7 +1,13 @@
+body {
+  touch-action: none;
+}
+
 .noteContainer{
   display: inline-block;
   width: 100%;
   height: calc(100vh - 24px);
+  overflow: hidden;
+  position: relative;
 }
 
 .selection-box {

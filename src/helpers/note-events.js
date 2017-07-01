@@ -56,7 +56,7 @@ function getNotesToMove(notes) {
 function moveNote (master, event, index) {
   // event.preventDefault();
 
-  if (!event.buttons) {
+  if (!event.buttons && !event.touches) {
     this.releaseNote(master);
   } else {
     const notes = master.state.notes;

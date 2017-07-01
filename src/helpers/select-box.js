@@ -38,7 +38,7 @@ function start(master, event) {
 function draw(master, event) {
   // event.preventDefault()
 
-  if (!event.buttons) {
+  if (!event.buttons && !event.touches) {
     this.end(master, event);
   } else {
     let x, y;
