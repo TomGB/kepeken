@@ -37,6 +37,6 @@ describe('loadState', () => {
       return userInput;
     });
 
-    assert.deepEqual(setState, { banana: 'apple' });
+    assert.deepEqual(setState, { banana: 'apple', loading: true });
   });
 });

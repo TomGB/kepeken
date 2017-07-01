@@ -1,7 +1,10 @@
 function createNote(master) {
   const notes = master.state.notes;
 
-  notes.push({ style: { top: 100, left: 100, height: 200, width: 350 } });
+  notes.push({
+    style: { top: 100, left: 100, height: 200, width: 350 },
+    content: ''
+  });
 
   master.setState({
     notes
@@ -12,7 +15,7 @@ function updateNote (master, event, index) {
   // event.preventDefault();
   const notes = master.state.notes;
 
-  notes[index].content = event.target.innerHTML;
+  notes[index].content = event.target.value;
 
   master.setState({
     notes
@@ -128,7 +131,8 @@ function editNote (master, event, i) {
     event.target.closest('.note').children[0].focus();
 
     master.setState({
-      notes
+      notes,
+      loading: false
     });
   }
 }

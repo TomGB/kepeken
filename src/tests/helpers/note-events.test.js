@@ -25,6 +25,7 @@ describe('NoteEvents', () => {
 
       const expectedState = {
         notes: [{
+          content: '',
           style: {
             left: 100,
             top:100,
@@ -32,6 +33,7 @@ describe('NoteEvents', () => {
             height: 200
           }
         }, {
+          content: '',
           style: {
             left: 100,
             top:100,

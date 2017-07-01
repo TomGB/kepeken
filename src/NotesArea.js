@@ -1,4 +1,5 @@
 import React from 'react';
+import ContentEditable from 'react-contenteditable';
 
 export default function NotesArea({setState, state, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
   return (
@@ -17,15 +18,7 @@ export default function NotesArea({setState, state, updateNote, selectNote, edit
       onTouchMove={(event) => drawSelectBox(event)}
       onMouseMove={(event) => drawSelectBox(event)}
     >
-      {state.notes.map((note, index) => {
-        let content;
-        if (state.loading) {
-          setState({ loading: false });
-          console.log(note.content);
-          content = note.content
-        }
-        // https://stackoverflow.com/questions/22677931/react-js-onchange-event-for-contenteditable
-        return (
+      {state.notes.map((note, index) =>
         <div
           className={`note${note.selected?' selected':''}`}
           data-index={index}
@@ -34,16 +27,14 @@ export default function NotesArea({setState, state, updateNote, selectNote, edit
           onTouchStart={(event) => selectNote(event, index)}
           onDoubleClick={(event) => editNote(event, index)}
           style={note.style} >
-          <div
-            contentEditable={note.editable || note.editing}
+          <ContentEditable
             className='noteText'
-            onKeyUp={(event) => updateNote(event, index)}
-            style={{ 'max-height': note.style.height }} >
-            {content}
-          </div>
+            html={note.content}
+            disabled={!note.editable && !note.editing}
+            onChange={(event) => updateNote(event, index)}
+          />
         </div>
-      )
-      })}
+      )}
       <div className={`selection-box${selectionBox.visible?'':' invisible'}`} style={selectionBox.style}>
       </div>
     </div>
