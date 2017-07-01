@@ -1,4 +1,5 @@
 import React from 'react';
+import ContentEditable from 'react-contenteditable';
 
 export default function NotesArea({notes, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
   return (
@@ -26,12 +27,12 @@ export default function NotesArea({notes, updateNote, selectNote, editNote, dese
           onTouchStart={(event) => selectNote(event, index)}
           onDoubleClick={(event) => editNote(event, index)}
           style={note.style} >
-          <div
-            contentEditable={note.editable || note.editing}
+          <ContentEditable
             className='noteText'
+            html={note.content}
+            disabled={!note.editable && !note.editing}
             onChange={(event) => updateNote(event, index)}
-            style={{ 'max-height': note.style.height }} >
-          </div>
+          />
         </div>
       )}
       <div className={`selection-box${selectionBox.visible?'':' invisible'}`} style={selectionBox.style}>

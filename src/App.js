@@ -49,7 +49,6 @@ class App extends Component {
           endSelectionBox = {(event) => SelectBox.end(this, event)}
           selectionBox = {this.state.selectionBox}
         ></NotesArea>
-
       </div>
     );
   }

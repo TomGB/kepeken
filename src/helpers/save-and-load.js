@@ -1,6 +1,7 @@
 const { copyToClipboard } = require ('./clipboard.js');
 
 function saveState(master) {
+  console.log('saving', master.state);
   copyToClipboard(JSON.stringify(master.state));
 }
 
@@ -9,9 +10,13 @@ function loadState(master, userPrompt = prompt) {
 
   let stateObject;
   try {
-    stateObject = JSON.parse(state);
+    stateObject = {
+      ...JSON.parse(state),
+      loading: true
+    };
 
     if (stateObject) {
+      console.log('loaded', stateObject);
       master.setState(stateObject);
     }
   } catch (e) {
