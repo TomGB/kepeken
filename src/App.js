@@ -39,7 +39,7 @@ class App extends Component {
           </button>
         </div>
         <NotesArea
-          state={this.state}
+          notes={this.state.notes}
           updateNote={(event, index) => NoteEvents.updateNote(this, event, index)}
           selectNote={(event, index) => NoteEvents.selectNote(this, event, index)}
           editNote={(event, index) => NoteEvents.editNote(this, event, index)}

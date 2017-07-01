@@ -1,7 +1,7 @@
 import React from 'react';
 import ContentEditable from 'react-contenteditable';
 
-export default function NotesArea({state, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
+export default function NotesArea({notes, updateNote, selectNote, editNote, deselectNote, startSelectBox, endSelectionBox, drawSelectBox, selectionBox}) {
   return (
     <div
       className='noteContainer'
@@ -18,7 +18,7 @@ export default function NotesArea({state, updateNote, selectNote, editNote, dese
       onTouchMove={(event) => drawSelectBox(event)}
       onMouseMove={(event) => drawSelectBox(event)}
     >
-      {state.notes.map((note, index) =>
+      {notes.map((note, index) =>
         <div
           className={`note${note.selected?' selected':''}`}
           data-index={index}
