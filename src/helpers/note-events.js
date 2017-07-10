@@ -2,7 +2,7 @@ function createNote(master) {
   const notes = master.state.notes;
 
   notes.push({
-    style: { top: 100, left: 100, height: 200, width: 350 },
+    style: { top: 100 - master.state.panLocation.currentY, left: 100 - master.state.panLocation.currentX, height: 130, width: 230 },
     content: ''
   });
 
@@ -66,12 +66,12 @@ function moveNote (master, event, index) {
 
       let x, y;
 
-      if(event.touches){
-        x = event.touches[0].pageX;
-        y = event.touches[0].pageY;
+      if(event.touches && !event.touches[1]){
+        x = event.touches[0].pageX * (1 / master.state.zoom);
+        y = event.touches[0].pageY * (1 / master.state.zoom);
       } else {
-        x = event.pageX;
-        y = event.pageY;
+        x = event.pageX * (1 / master.state.zoom);
+        y = event.pageY * (1 / master.state.zoom);
       }
 
       if (notesToMove.length) {

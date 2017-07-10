@@ -2,12 +2,28 @@ body {
   touch-action: none;
 }
 
+html,
+body,
+#root,
+.main {
+    height: 100%;
+}
+
+.menu{
+  z-index: 99999;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+}
+
 .noteContainer{
   display: inline-block;
   width: 100%;
-  height: calc(100vh - 24px);
-  overflow: hidden;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
   position: relative;
+  background: url('/grid.png');
 }
 
 .selection-box {
@@ -44,10 +60,9 @@ body {
   box-sizing: border-box; /* fit parent width */
   border: none;
   background-color: transparent;
-  font-size: 20px;
   outline: none;
   text-align: center;
-  font-size: 25pt;
+  font-size: 20pt;
   position: absolute;
   left: 50%;
   top: 50%;

@@ -9,28 +9,30 @@ function isClickOnNote(event) {
 function start(master, event) {
   // event.preventDefault();
 
-  let x, y;
+  if (master.state.shiftKey) {
+    let x, y;
 
-  if(event.touches){
-    x = event.touches[0].pageX;
-    y = event.touches[0].pageY;
-  } else {
-    x = event.pageX;
-    y = event.pageY;
-  }
+    if(event.touches && !event.touches[1]){
+      x = event.touches[0].pageX * (1 / master.state.zoom);
+      y = event.touches[0].pageY * (1 / master.state.zoom);
+    } else {
+      x = event.pageX * (1 / master.state.zoom);
+      y = event.pageY * (1 / master.state.zoom);
+    }
 
-  if (event.button === 0 || event.button === undefined) {
-    if(!isClickOnNote(event)){
-      master.setState({
-        selectionBox: {
-          visible: true,
-          startX: x,
-          startY: y,
-          currentX: x,
-          currentY: y,
-          style: {},
-        }
-      });
+    if (event.button === 0 || event.button === undefined) {
+      if(!isClickOnNote(event)){
+        master.setState({
+          selectionBox: {
+            visible: true,
+            startX: x,
+            startY: y,
+            currentX: x,
+            currentY: y,
+            style: {},
+          }
+        });
+      }
     }
   }
 }
@@ -38,44 +40,46 @@ function start(master, event) {
 function draw(master, event) {
   // event.preventDefault()
 
-  if (!event.buttons && !event.touches) {
-    this.end(master, event);
-  } else {
-    let x, y;
-
-    if (event.touches) {
-      x = event.touches[0].pageX;
-      y = event.touches[0].pageY;
+  if (master.state.shiftKey) {
+    if (!event.buttons && !event.touches) {
+      this.end(master, event);
     } else {
-      x = event.pageX;
-      y = event.pageY;
-    }
+      let x, y;
 
-    const selectionBox = master.state.selectionBox;
-    if (selectionBox.visible) {
-
-      selectionBox.currentX = x;
-      selectionBox.currentY = y;
-
-      if (selectionBox.startX < selectionBox.currentX) {
-        selectionBox.style.left = selectionBox.startX;
-        selectionBox.style.width = selectionBox.currentX - selectionBox.startX;
+      if (event.touches && !event.touches[1]) {
+        x = event.touches[0].pageX * (1 / master.state.zoom);
+        y = event.touches[0].pageY * (1 / master.state.zoom);
       } else {
-        selectionBox.style.left = selectionBox.currentX;
-        selectionBox.style.width = selectionBox.startX - selectionBox.currentX;
+        x = event.pageX * (1 / master.state.zoom);
+        y = event.pageY * (1 / master.state.zoom);
       }
 
-      if (selectionBox.startY < selectionBox.currentY) {
-        selectionBox.style.top = selectionBox.startY;
-        selectionBox.style.height = selectionBox.currentY - selectionBox.startY;
-      } else {
-        selectionBox.style.top = selectionBox.currentY;
-        selectionBox.style.height = selectionBox.startY - selectionBox.currentY;
-      }
+      const selectionBox = master.state.selectionBox;
+      if (selectionBox.visible) {
 
-      master.setState({
-          selectionBox
-      });
+        selectionBox.currentX = x;
+        selectionBox.currentY = y;
+
+        if (selectionBox.startX < selectionBox.currentX) {
+          selectionBox.style.left = selectionBox.startX;
+          selectionBox.style.width = selectionBox.currentX - selectionBox.startX;
+        } else {
+          selectionBox.style.left = selectionBox.currentX;
+          selectionBox.style.width = selectionBox.startX - selectionBox.currentX;
+        }
+
+        if (selectionBox.startY < selectionBox.currentY) {
+          selectionBox.style.top = selectionBox.startY;
+          selectionBox.style.height = selectionBox.currentY - selectionBox.startY;
+        } else {
+          selectionBox.style.top = selectionBox.currentY;
+          selectionBox.style.height = selectionBox.startY - selectionBox.currentY;
+        }
+
+        master.setState({
+            selectionBox
+        });
+      }
     }
   }
 }
@@ -89,10 +93,10 @@ function end(master, event) {
 
   notes.forEach(note => {
     if (
-      note.style.left >= selectionBox.style.left &&
-      note.style.top >= selectionBox.style.top &&
-      note.style.left + note.style.width < selectionBox.style.left + selectionBox.style.width &&
-      note.style.top + note.style.height < selectionBox.style.top + selectionBox.style.height
+      note.style.left + master.state.panLocation.currentX >= selectionBox.style.left &&
+      note.style.top + master.state.panLocation.currentY >= selectionBox.style.top &&
+      note.style.left + master.state.panLocation.currentX + note.style.width < selectionBox.style.left + selectionBox.style.width &&
+      note.style.top + master.state.panLocation.currentY + note.style.height < selectionBox.style.top + selectionBox.style.height
     ) {
       note.selected = true;
       note.movable = true;
