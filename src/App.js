@@ -3,9 +3,13 @@ import NotesArea from './NotesArea';
 import './App.css';
 import addKeyEventListeners from './helpers/key-listeners'
 import addWindowLeaveMessage from './helpers/leave-message'
+import { addZoomEventListener, resetZoom } from './helpers/zoom'
 import { saveState, loadState } from './helpers/save-and-load'
 import SelectBox from './helpers/select-box'
-import NoteEvents from './helpers/note-events.js'
+import NoteEvents from './helpers/note-events'
+import { resetPan } from './helpers/pan'
+
+require('dotenv').config();
 
 class App extends Component {
   constructor() {
@@ -16,11 +20,18 @@ class App extends Component {
       selectionBox: {
         visible: false,
         style: {},
+      },
+      zoom: 1,
+      shiftKey: false,
+      panLocation: {
+        active: false,
+        currentX: 0,
+        currentY: 0,
       }
     };
 
-    addWindowLeaveMessage(this)
-
+    addWindowLeaveMessage(this);
+    addZoomEventListener(this);
     addKeyEventListeners(this);
   }
 
@@ -41,9 +52,15 @@ class App extends Component {
           <button onClick={() => loadState(this)}>
             Load
           </button>
+          <button onClick={() => {
+            resetPan(this)
+            resetZoom(this)
+          }}>
+            Reset pan and zoom
+          </button>
         </div>
         <NotesArea
-          notes={this.state.notes}
+          master={this}
           updateNote={(event, index) => NoteEvents.updateNote(this, event, index)}
           selectNote={(event, index) => NoteEvents.selectNote(this, event, index)}
           editNote={(event, index) => NoteEvents.editNote(this, event, index)}
@@ -51,7 +68,6 @@ class App extends Component {
           startSelectBox = {(event) => SelectBox.start(this, event)}
           drawSelectBox = {(event) => SelectBox.draw(this, event)}
           endSelectionBox = {(event) => SelectBox.end(this, event)}
-          selectionBox = {this.state.selectionBox}
         ></NotesArea>
       </div>
     );
